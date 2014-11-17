@@ -68,6 +68,7 @@ int main(int argc, char** argv) {
       mpc_err_print(r.error);
       mpc_err_delete(r.error);
     }
+    free(input);
   }
 
   /* Undefine and delete our parsers */
