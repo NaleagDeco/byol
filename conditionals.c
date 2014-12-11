@@ -485,6 +485,25 @@ lval* builtin_eval(lenv* e, lval* a) {
   return lval_eval(e, x);
 }
 
+lval* builtin_if(lenv* e, lval* a) {
+  LASSERT_NUM("if", a, 3);
+
+  /* Pop the first element */
+  lval* t = lval_pop(a, 0);
+
+  lval* b = NULL;
+  /* Based on test, select branch to evaluate */
+  if (lval_eval(e, t)->num != 0) {
+    b = lval_pop(a, 0);
+  } else {
+    b = lval_pop(a, 1);
+  }
+
+  b = lval_eval(e, b);
+
+  lval_del(a); lval_del(t); return b;
+}
+
 #define LCOMPARE(op, v1, v2) \
   v1 = v1 op v2 ? 1 : 0
 
@@ -690,6 +709,9 @@ void lenv_add_builtins(lenv* e) {
   lenv_add_builtin(e, "tail", builtin_tail);
   lenv_add_builtin(e, "eval", builtin_eval);
   lenv_add_builtin(e, "join", builtin_join);
+
+  /* Conditional functions */
+  lenv_add_builtin(e, "if", builtin_if);
 
   /* Arithmetic Functions */
   lenv_add_builtin(e, "+", builtin_add);
